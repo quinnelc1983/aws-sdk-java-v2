@@ -17,19 +17,36 @@ package software.amazon.awssdk.services.sts.internal;
 
 import software.amazon.awssdk.annotations.SdkInternalApi;
 import software.amazon.awssdk.auth.credentials.AwsSessionCredentials;
+import software.amazon.awssdk.services.sts.endpoints.internal.Arn;
+import software.amazon.awssdk.services.sts.model.AssumedRoleUser;
 import software.amazon.awssdk.services.sts.model.Credentials;
 
 @SdkInternalApi
 public final class StsAuthUtils {
+
     private StsAuthUtils() {
     }
 
+    public static String accountIdFromArn(AssumedRoleUser assumedRoleUser) {
+        if (assumedRoleUser == null) {
+            return null;
+        }
+        return Arn.parse(assumedRoleUser.arn())
+                  .map(Arn::accountId)
+                  .orElse(null);
+    }
+
     public static AwsSessionCredentials toAwsSessionCredentials(Credentials credentials) {
+        return toAwsSessionCredentials(credentials, null);
+    }
+
+    public static AwsSessionCredentials toAwsSessionCredentials(Credentials credentials, String accountId) {
         return AwsSessionCredentials.builder()
                                     .accessKeyId(credentials.accessKeyId())
                                     .secretAccessKey(credentials.secretAccessKey())
                                     .sessionToken(credentials.sessionToken())
                                     .expirationTime(credentials.expiration())
+                                    .accountId(accountId)
                                     .build();
     }
 }

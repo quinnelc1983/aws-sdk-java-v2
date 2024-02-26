@@ -15,6 +15,7 @@
 
 package software.amazon.awssdk.services.sts.auth;
 
+import static software.amazon.awssdk.services.sts.internal.StsAuthUtils.accountIdFromArn;
 import static software.amazon.awssdk.services.sts.internal.StsAuthUtils.toAwsSessionCredentials;
 
 import java.util.function.Consumer;
@@ -26,6 +27,7 @@ import software.amazon.awssdk.auth.credentials.AwsCredentialsProvider;
 import software.amazon.awssdk.auth.credentials.AwsSessionCredentials;
 import software.amazon.awssdk.services.sts.StsClient;
 import software.amazon.awssdk.services.sts.model.AssumeRoleRequest;
+import software.amazon.awssdk.services.sts.model.AssumeRoleResponse;
 import software.amazon.awssdk.utils.ToString;
 import software.amazon.awssdk.utils.Validate;
 import software.amazon.awssdk.utils.builder.ToCopyableBuilder;
@@ -70,7 +72,8 @@ public final class StsAssumeRoleCredentialsProvider
     protected AwsSessionCredentials getUpdatedCredentials(StsClient stsClient) {
         AssumeRoleRequest assumeRoleRequest = assumeRoleRequestSupplier.get();
         Validate.notNull(assumeRoleRequest, "Assume role request must not be null.");
-        return toAwsSessionCredentials(stsClient.assumeRole(assumeRoleRequest).credentials());
+        AssumeRoleResponse assumeRoleResponse = stsClient.assumeRole(assumeRoleRequest);
+        return toAwsSessionCredentials(assumeRoleResponse.credentials(), accountIdFromArn(assumeRoleResponse.assumedRoleUser()));
     }
 
     @Override

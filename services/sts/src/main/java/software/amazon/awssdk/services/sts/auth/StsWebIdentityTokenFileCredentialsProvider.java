@@ -15,6 +15,7 @@
 
 package software.amazon.awssdk.services.sts.auth;
 
+import static software.amazon.awssdk.services.sts.internal.StsAuthUtils.accountIdFromArn;
 import static software.amazon.awssdk.services.sts.internal.StsAuthUtils.toAwsSessionCredentials;
 import static software.amazon.awssdk.utils.StringUtils.trim;
 import static software.amazon.awssdk.utils.Validate.notNull;
@@ -32,6 +33,7 @@ import software.amazon.awssdk.core.SdkSystemSetting;
 import software.amazon.awssdk.services.sts.StsClient;
 import software.amazon.awssdk.services.sts.internal.AssumeRoleWithWebIdentityRequestSupplier;
 import software.amazon.awssdk.services.sts.model.AssumeRoleWithWebIdentityRequest;
+import software.amazon.awssdk.services.sts.model.AssumeRoleWithWebIdentityResponse;
 import software.amazon.awssdk.utils.ToString;
 import software.amazon.awssdk.utils.builder.ToCopyableBuilder;
 
@@ -142,7 +144,9 @@ public final class StsWebIdentityTokenFileCredentialsProvider
     protected AwsSessionCredentials getUpdatedCredentials(StsClient stsClient) {
         AssumeRoleWithWebIdentityRequest request = assumeRoleWithWebIdentityRequest.get();
         notNull(request, "AssumeRoleWithWebIdentityRequest can't be null");
-        return toAwsSessionCredentials(stsClient.assumeRoleWithWebIdentity(request).credentials());
+        AssumeRoleWithWebIdentityResponse assumeRoleWithWebIdentityResponse = stsClient.assumeRoleWithWebIdentity(request);
+        return toAwsSessionCredentials(assumeRoleWithWebIdentityResponse.credentials(),
+                                  accountIdFromArn(assumeRoleWithWebIdentityResponse.assumedRoleUser()));
     }
 
     @Override

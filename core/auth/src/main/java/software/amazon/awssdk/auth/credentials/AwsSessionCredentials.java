@@ -36,7 +36,7 @@ public final class AwsSessionCredentials implements AwsCredentials, AwsSessionCr
     private final String accessKeyId;
     private final String secretAccessKey;
     private final String sessionToken;
-
+    private final String accountId;
     private final Instant expirationTime;
 
     private AwsSessionCredentials(Builder builder) {
@@ -44,6 +44,7 @@ public final class AwsSessionCredentials implements AwsCredentials, AwsSessionCr
         this.secretAccessKey = Validate.paramNotNull(builder.secretAccessKey, "secretKey");
         this.sessionToken = Validate.paramNotNull(builder.sessionToken, "sessionToken");
         this.expirationTime = builder.expirationTime;
+        this.accountId = builder.accountId;
     }
 
     /**
@@ -98,9 +99,15 @@ public final class AwsSessionCredentials implements AwsCredentials, AwsSessionCr
     }
 
     @Override
+    public Optional<String> accountId() {
+        return Optional.ofNullable(accountId);
+    }
+
+    @Override
     public String toString() {
         return ToString.builder("AwsSessionCredentials")
                        .add("accessKeyId", accessKeyId())
+                       .add("accountId", accountId)
                        .build();
     }
 
@@ -117,7 +124,8 @@ public final class AwsSessionCredentials implements AwsCredentials, AwsSessionCr
         return Objects.equals(accessKeyId, that.accessKeyId) &&
                Objects.equals(secretAccessKey, that.secretAccessKey) &&
                Objects.equals(sessionToken, that.sessionToken) &&
-               Objects.equals(expirationTime, that.expirationTime().orElse(null));
+               Objects.equals(expirationTime, that.expirationTime().orElse(null)) &&
+               Objects.equals(accountId, that.accountId().orElse(null));
     }
 
     @Override
@@ -127,6 +135,7 @@ public final class AwsSessionCredentials implements AwsCredentials, AwsSessionCr
         hashCode = 31 * hashCode + Objects.hashCode(secretAccessKey());
         hashCode = 31 * hashCode + Objects.hashCode(sessionToken());
         hashCode = 31 * hashCode + Objects.hashCode(expirationTime);
+        hashCode = 31 * hashCode + Objects.hashCode(accountId);
         return hashCode;
     }
 
@@ -139,6 +148,7 @@ public final class AwsSessionCredentials implements AwsCredentials, AwsSessionCr
         private String secretAccessKey;
         private String sessionToken;
         private Instant expirationTime;
+        private String accountId;
 
         /**
          * The AWS access key, used to identify the user interacting with services. Required.
@@ -172,6 +182,14 @@ public final class AwsSessionCredentials implements AwsCredentials, AwsSessionCr
          */
         public Builder expirationTime(Instant expirationTime) {
             this.expirationTime = expirationTime;
+            return this;
+        }
+
+        /**
+         * The account id associated with these credentials.
+         */
+        public Builder accountId(String accountId) {
+            this.accountId = accountId;
             return this;
         }
 

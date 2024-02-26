@@ -16,7 +16,9 @@
 package software.amazon.awssdk.auth.credentials.internal;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import nl.jqno.equalsverifier.EqualsVerifier;
 import org.junit.jupiter.api.Test;
@@ -27,6 +29,7 @@ public class AwsSessionCredentialsTest {
     private static final String ACCESS_KEY_ID = "accessKeyId";
     private static final String SECRET_ACCESS_KEY = "secretAccessKey";
     private static final String SESSION_TOKEN = "sessionToken";
+    private static final String ACCOUNT_ID = "accountId";
 
     public void equalsHashcode() {
         EqualsVerifier.forClass(AwsSessionCredentials.class)
@@ -62,6 +65,7 @@ public class AwsSessionCredentialsTest {
         assertEquals(ACCESS_KEY_ID, identity.accessKeyId());
         assertEquals(SECRET_ACCESS_KEY, identity.secretAccessKey());
         assertEquals(SESSION_TOKEN, identity.sessionToken());
+        assertFalse(identity.accountId().isPresent());
     }
 
     @Test
@@ -70,9 +74,12 @@ public class AwsSessionCredentialsTest {
                                                               .accessKeyId(ACCESS_KEY_ID)
                                                               .secretAccessKey(SECRET_ACCESS_KEY)
                                                               .sessionToken(SESSION_TOKEN)
+                                                              .accountId(ACCOUNT_ID)
                                                               .build();
         assertEquals(ACCESS_KEY_ID, identity.accessKeyId());
         assertEquals(SECRET_ACCESS_KEY, identity.secretAccessKey());
         assertEquals(SESSION_TOKEN, identity.sessionToken());
+        assertTrue(identity.accountId().isPresent());
+        assertEquals(ACCOUNT_ID, identity.accountId().get());
     }
 }
