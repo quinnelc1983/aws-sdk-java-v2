@@ -16,22 +16,18 @@
 package software.amazon.awssdk.core.internal.http.pipeline.stages;
 
 import software.amazon.awssdk.annotations.SdkInternalApi;
-import software.amazon.awssdk.core.Response;
 import software.amazon.awssdk.core.SdkResponse;
 import software.amazon.awssdk.core.internal.http.RequestExecutionContext;
 import software.amazon.awssdk.core.internal.http.pipeline.RequestPipeline;
+import software.amazon.awssdk.core.internal.util.ProgressListenerUtils;
 
-/**
- * Unwrap a {@link Response} container to just the POJO result. If we've gotten this far
- * then the Response container can only be a success response, otherwise the exception would have
- * been thrown out of the pipeline.
- *
- * @param <OutputT> POJO result type.
- */
 @SdkInternalApi
-public class UnwrapResponseContainer<OutputT> implements RequestPipeline<Response<OutputT>, OutputT> {
+public class AfterExecutionProgressReportingStage<OutputT> implements RequestPipeline<OutputT, OutputT> {
     @Override
-    public OutputT execute(Response<OutputT> input, RequestExecutionContext context) throws Exception {
-        return input.response();
+    public OutputT execute(OutputT input, RequestExecutionContext context) throws Exception {
+        ProgressListenerUtils.updateProgressListenersWithSuccessResponse((SdkResponse) input, context);
+        return input;
     }
+
+
 }
