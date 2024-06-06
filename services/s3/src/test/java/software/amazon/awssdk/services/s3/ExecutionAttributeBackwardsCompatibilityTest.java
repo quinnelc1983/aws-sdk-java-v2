@@ -76,7 +76,9 @@ public class ExecutionAttributeBackwardsCompatibilityTest {
              AwsSignerExecutionAttribute.SERVICE_SIGNING_NAME, // Endpoint rules override signing name
              AwsSignerExecutionAttribute.SIGNING_REGION, // Endpoint rules override signing region
              AwsSignerExecutionAttribute.AWS_CREDENTIALS, // Legacy auth strategy overrides credentials
-             AwsSignerExecutionAttribute.SIGNER_DOUBLE_URL_ENCODE); // Endpoint rules override double-url-encode
+             AwsSignerExecutionAttribute.SIGNER_DOUBLE_URL_ENCODE, // Endpoint rules override double-url-encode
+             AwsSignerExecutionAttribute.SIGNER_NORMALIZE_PATH, // Auth scheme interceptor overrides
+             S3SignerExecutionAttribute.ENABLE_PAYLOAD_SIGNING); // Auth scheme interceptor overrides
     }
 
     @Test
